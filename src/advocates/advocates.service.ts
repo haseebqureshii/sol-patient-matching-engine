@@ -11,10 +11,11 @@ export class AdvocatesService {
   ) {}
 
   async findAll() {
-    return await this.advocateRepository.find({ take: 100 }); // Limit for safety
+    return await this.advocateRepository.find({ take: 100 });
   }
 
-  async findOne(id: number) {
+  // FIXED: id parameter typed as string
+  async findOne(id: string) {
     const advocate = await this.advocateRepository.findOne({ where: { advocate_id: id } });
     if (!advocate) {
       throw new NotFoundException(`Advocate with ID ${id} not found`);

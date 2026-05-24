@@ -1,13 +1,22 @@
-import { Controller, Get, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, ParseUUIDPipe } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 
 @Controller('matches')
 export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
 
-  // Endpoint: GET /matches?patientId=123
+  @Get('patients')
+  async getPatients() {
+    return await this.matchesService.getDemoPatients();
+  }
+
   @Get()
-  async getMatches(@Query('patientId', ParseIntPipe) patientId: number) {
+  async getMatches(@Query('patientId', ParseUUIDPipe) patientId: string) {
     return await this.matchesService.getTopMatches(patientId);
+  }
+
+  @Post('book')
+  async bookAdvocate(@Body() body: { patientId: string; advocateId: string }) {
+    return await this.matchesService.bookAdvocate(body.patientId, body.advocateId);
   }
 }

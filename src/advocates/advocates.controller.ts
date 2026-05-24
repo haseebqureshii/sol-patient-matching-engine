@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { AdvocatesService } from './advocates.service';
 
 @Controller('advocates')
@@ -10,8 +10,9 @@ export class AdvocatesController {
     return this.advocatesService.findAll();
   }
 
+  // FIXED: ParseUUIDPipe instead of ParseIntPipe
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.advocatesService.findOne(id);
   }
 }

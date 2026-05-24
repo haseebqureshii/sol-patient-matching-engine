@@ -1,40 +1,37 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller'; // Ensure this is imported
+import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
-@Module({
-  imports: [ TypeOrmModule ],
-  controllers: [AppController],
-  providers: [AppService],
-})
+import { MatchesModule } from './matches/matches.module';
+import { AdvocatesModule } from './advocates/advocates.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env', // Explicitly look for this file
+      envFilePath: '.env',
     }),
-    
-    // 2. Use forRootAsync to wait for ConfigModule
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const url = configService.get<string>('DATABASE_URL');
-        console.log("Connecting to:", url); // Debugging step: check the logs
-        return {
-          type: 'postgres',
-          url: url,
-          ssl: {
-            rejectUnauthorized: false, // Required for Neon cloud connections
-          },
-          synchronize: false,
-          autoLoadEntities: true,
-        };
-      },
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get<string>('DATABASE_URL'),
+        ssl: { rejectUnauthorized: false },
+        synchronize: false,
+        autoLoadEntities: true,
+        extra: {
+          max: 20, // Keep this lower to stay safe with Neon/Postgres limits
+          idleTimeoutMillis: 30000,
+          connectionTimeoutMillis: 10000,
+        }
+      }),
     }),
+    MatchesModule,
+    AdvocatesModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
