@@ -5,6 +5,7 @@ const cluster = require('node:cluster');
 const os = require('node:os');
 
 async function bootstrap() {
+  console.log("Checking Redis URL:", process.env.UPSTASH_REDIS_REST_URL);
   const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log'] });
   app.enableCors(); 
   
