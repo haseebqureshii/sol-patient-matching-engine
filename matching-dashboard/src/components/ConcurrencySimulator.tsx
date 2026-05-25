@@ -15,7 +15,7 @@ export default function ConcurrencySimulator() {
   const [metrics, setMetrics] = useState({ total: 0, success: 0, conflict: 0, dirty: 0 });
   const [activeRequests, setActiveRequests] = useState<{ id: number; status: string }[]>([]);
 
-  const timers = useRef<NodeJS.Timeout[]>([]);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimers = () => {
     timers.current.forEach(clearTimeout);
