@@ -3,7 +3,7 @@ import {
   HeartPulse, CheckCircle, Clock, ShieldAlert, ArrowLeft, 
   Users, Zap, Terminal, BookOpen, LayoutDashboard, Database, Server, Lock 
 } from 'lucide-react';
-
+import ConcurrencySimulator from './components/ConcurrencySimulator';
 // It uses the Vite environment variable if it exists, otherwise falls back to localhost.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -231,6 +231,7 @@ export default function App() {
                 </div>
               </div>
             </div>
+            <ConcurrencySimulator />
           </div>
         )}
 
