@@ -5,18 +5,29 @@ const cluster = require('node:cluster');
 const os = require('node:os');
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log'] });
   app.enableCors(); 
   
-  // Clean, standard NestJS startup. 
-  // Let the framework handle the HTTP server bind and router attachment.
-  await app.listen(3000, '0.0.0.0');
-  console.log(`[WORKER] Node process ${process.pid} booted and listening on 0.0.0.0:3000`);
+  await app.init();
+  const server = app.getHttpServer();
+  
+  server.keepAliveTimeout = 65000;
+  server.headersTimeout = 66000;
+
+  await new Promise<void>((resolve) => {
+    server.listen(process.env.PORT ?? 3000, '0.0.0.0', 5000, () => {
+      console.log(`[WORKER] Node process ${process.pid} booted and listening.`);
+      resolve();
+    });
+  });
 }
 
 if (cluster.isPrimary || cluster.isMaster) {
-  const numWorkers = 8; 
-  console.log(`[MASTER] Scaling to ${numWorkers} workers.`);
+  // Check for cloud limits, otherwise default to high-performance local tuning
+  const maxLocalCores = Math.min(os.cpus().length, 8);
+  const numWorkers = process.env.WEB_CONCURRENCY ? parseInt(process.env.WEB_CONCURRENCY, 10) : maxLocalCores; 
+  
+  console.log(`[MASTER] Hardware detected. Scaling to ${numWorkers} worker(s).`);
 
   for (let i = 0; i < numWorkers; i++) {
     cluster.fork();
@@ -28,7 +39,7 @@ if (cluster.isPrimary || cluster.isMaster) {
   });
 } else {
   bootstrap().catch(err => {
-    console.error(`[FATAL] Worker crashed:`, err);
+    console.error(`[FATAL] Worker ${process.pid} crashed:`, err);
     process.exit(1);
   });
 }
