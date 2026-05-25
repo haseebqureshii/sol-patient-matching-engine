@@ -248,7 +248,7 @@ export default function App() {
                 <p className="text-sm text-slate-500 mb-6">Select a patient record to execute the similarity matching algorithm against the database.</p>
                 
                 {loading ? (
-                  <div className="p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Querying Postgres Database...</div>
+                  <div className="p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Connecting to Postgres… the database is currently being thawed from cryosleep.</div>
                 ) : (
                   <div className="grid gap-3">
                     {patients.map(patient => (
