@@ -12,7 +12,7 @@ import Redis from 'ioredis';
   controllers: [MatchesController],
   providers: [
     MatchesService,
-    {
+    /**{
       provide: 'REDIS_CLIENT',
       useFactory: () => {
         return new Redis({
@@ -20,7 +20,7 @@ import Redis from 'ioredis';
           port: 6379,
         });
       },
-    },
+    },**/
   ],
 })
 export class MatchesModule {}
