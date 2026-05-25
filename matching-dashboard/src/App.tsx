@@ -3,7 +3,7 @@ import {
   HeartPulse, CheckCircle, Clock, ShieldAlert, ArrowLeft, 
   Users, Zap, Terminal, BookOpen, LayoutDashboard, Database, Server, Lock 
 } from 'lucide-react';
-import ConcurrencySimulator from './components/ConcurrencySimulator';
+import systemInfographic from './assets/sol-matching-engine-arch.png';
 // It uses the Vite environment variable if it exists, otherwise falls back to localhost.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -231,10 +231,28 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <ConcurrencySimulator />
           </div>
         )}
+        {activeTab === 'docs' && (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            
+            {/* ... Header ... */}
+            {/* ... The Stack ... */}
+            {/* ... Transaction Lifecycle Breakdown ... */}
 
+            {/* NEW: Infographic Section */}
+            <div className="bg-white rounded-2xl p-2 shadow-sm border border-slate-200 mt-12 overflow-hidden">
+              <div className="bg-slate-50 rounded-xl p-4 sm:p-8 flex justify-center items-center">
+                 <img 
+                   src={systemInfographic} 
+                   alt="System Architecture and Concurrency Flow Diagram" 
+                   className="w-full max-w-4xl h-auto rounded-lg shadow-sm border border-slate-200 object-contain"
+                 />
+              </div>
+            </div>
+
+          </div>
+        )}
         {/* ========================================= */}
         {/* TAB 2: LIVE APPLICATION                   */}
         {/* ========================================= */}
@@ -248,7 +266,7 @@ export default function App() {
                 <p className="text-sm text-slate-500 mb-6">Select a patient record to execute the similarity matching algorithm against the database.</p>
                 
                 {loading ? (
-                  <div className="p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Querying Postgres Database...</div>
+                  <div className="p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Connecting to Postgres… the database is currently being thawed from cryosleep.</div>
                 ) : (
                   <div className="grid gap-3">
                     {patients.map(patient => (
