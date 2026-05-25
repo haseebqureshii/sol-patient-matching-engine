@@ -250,46 +250,44 @@ export default function App() {
                  />
               </div>
             </div>
+                    {/* NEW: Why This Matters Section */}
+            <div className="max-w-3xl mx-auto space-y-6 text-slate-700 leading-relaxed pb-12">
+                <h3 className="text-2xl font-bold text-slate-900 mt-8 mb-4">
+                  Why is this so complicated?
+                </h3>
+                
+                <p>
+                  At first glance, matching a patient to an advocate sounds simple: find someone available and connect them. But behind the scenes, healthcare matching is incredibly complex, especially when dealing with scale.
+                </p>
 
+                <p>
+                  Imagine a popular concert. When tickets go on sale, thousands of people try to buy the exact same seat at the exact same millisecond. If the ticketing system isn’t designed perfectly, two people might successfully "buy" the same seat, leading to a massive problem at the venue. This is called a <strong>race condition</strong>.
+                </p>
+
+                <p>
+                  In this application, we aren't dealing with concert tickets; we are dealing with medical advocates. When a patient needs help, the system searches a database of 1.5 million records to find the best possible match based on highly specific criteria. 
+                </p>
+
+                <p>
+                  The challenge arises when <em>multiple</em> patients need help at the exact same time, and the system identifies the <em>same</em> highly qualified advocate for both of them. If the system isn't robust, it might accidentally assign that single advocate to two different patients simultaneously.
+                </p>
+
+                <div className="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-xl my-8">
+                  <h4 className="font-bold text-indigo-900 mb-2">The Solution: The Distributed Lock</h4>
+                  <p className="text-sm text-indigo-800">
+                    To solve this, we use a "Mutex" (Mutual Exclusion) powered by Redis. Think of it like the speaking conch in <em>Lord of the Flies</em>. Only the person holding the conch is allowed to speak. 
+                  </p>
+                  <p className="text-sm text-indigo-800 mt-2">
+                    When our system tries to book an advocate, it first grabs the "digital conch" for that specific advocate. Any other request that tries to book that advocate while the conch is held is instantly blocked (resulting in the <code className="bg-indigo-100 px-1 rounded text-indigo-900">409 Conflict</code> you see in the logs). Once the database safely records the appointment, the system puts the conch down, making the advocate available for the next search.
+                  </p>
+                </div>
+
+                <p>
+                  This ensures that no matter how many requests hit the server simultaneously, data integrity is guaranteed. Every patient gets the dedicated attention they need, without scheduling conflicts or system errors.
+                </p>
+            </div>
           </div>
         )}
-
-        {/* NEW: Why This Matters Section */}
-        <div className="max-w-3xl mx-auto space-y-6 text-slate-700 leading-relaxed pb-12">
-            <h3 className="text-2xl font-bold text-slate-900 mt-8 mb-4">
-              Why is this so complicated?
-            </h3>
-            
-            <p>
-              At first glance, matching a patient to an advocate sounds simple: find someone available and connect them. But behind the scenes, healthcare matching is incredibly complex, especially when dealing with scale.
-            </p>
-
-            <p>
-              Imagine a popular concert. When tickets go on sale, thousands of people try to buy the exact same seat at the exact same millisecond. If the ticketing system isn’t designed perfectly, two people might successfully "buy" the same seat, leading to a massive problem at the venue. This is called a <strong>race condition</strong>.
-            </p>
-
-            <p>
-              In this application, we aren't dealing with concert tickets; we are dealing with medical advocates. When a patient needs help, the system searches a database of 1.5 million records to find the best possible match based on highly specific criteria. 
-            </p>
-
-            <p>
-              The challenge arises when <em>multiple</em> patients need help at the exact same time, and the system identifies the <em>same</em> highly qualified advocate for both of them. If the system isn't robust, it might accidentally assign that single advocate to two different patients simultaneously.
-            </p>
-
-            <div className="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-xl my-8">
-              <h4 className="font-bold text-indigo-900 mb-2">The Solution: The Distributed Lock</h4>
-              <p className="text-sm text-indigo-800">
-                To solve this, we use a "Mutex" (Mutual Exclusion) powered by Redis. Think of it like the speaking conch in <em>Lord of the Flies</em>. Only the person holding the conch is allowed to speak. 
-              </p>
-              <p className="text-sm text-indigo-800 mt-2">
-                When our system tries to book an advocate, it first grabs the "digital conch" for that specific advocate. Any other request that tries to book that advocate while the conch is held is instantly blocked (resulting in the <code className="bg-indigo-100 px-1 rounded text-indigo-900">409 Conflict</code> you see in the logs). Once the database safely records the appointment, the system puts the conch down, making the advocate available for the next search.
-              </p>
-            </div>
-
-            <p>
-              This ensures that no matter how many requests hit the server simultaneously, data integrity is guaranteed. Every patient gets the dedicated attention they need, without scheduling conflicts or system errors.
-            </p>
-        </div>
 
         {/* ========================================= */}
         {/* TAB 2: LIVE APPLICATION                   */}
