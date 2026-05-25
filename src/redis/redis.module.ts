@@ -1,17 +1,12 @@
 import { Module, Global } from '@nestjs/common';
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 
 @Global()
 @Module({
   providers: [
     {
       provide: 'REDIS_CLIENT',
-      useFactory: () => {
-        return new Redis({
-          host: '127.0.0.1',
-          port: 6379,
-        });
-      },
+      useValue: Redis.fromEnv(), // This automatically reads UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
     },
   ],
   exports: ['REDIS_CLIENT'],

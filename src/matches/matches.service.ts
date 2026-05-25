@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { MatchScore } from './entities/match-score.entity';
 import { Appointment } from './entities/appointment.entity';
 import { Patient } from './entities/patient.entity';
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 
 @Injectable()
 export class MatchesService {
@@ -15,7 +15,8 @@ export class MatchesService {
     private appointmentRepository: Repository<Appointment>,
     @InjectRepository(Patient)
     private patientRepository: Repository<Patient>, 
-    @Inject('REDIS_CLIENT') private readonly redis: Redis, 
+    @Inject('REDIS_CLIENT') 
+    private readonly redis: Redis, 
   ) {}
 
   // 1. Fetch patients for the new UI dropdown
@@ -51,7 +52,7 @@ export class MatchesService {
     const lockKey = `lock:advocate:${advocateId}`;
     
     // Attempt to acquire lock
-    const acquired = await this.redis.set(lockKey, 'locked', 'PX', 5000, 'NX');
+    const acquired = await this.redis.set(lockKey, 'locked', { nx: true, ex: 5 });
 
     if (!acquired) {
       throw new ConflictException('High demand: Advocate is currently being booked by another patient. Please try again.');
